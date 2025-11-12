@@ -1,0 +1,50 @@
+{% extends 'Salles/base.html' %}
+
+{% block title %}Réservation Confirmée{% endblock %}
+
+{% block content %}
+<div class="confirmation-container">
+    <div class="success-icon"> V </div>
+    <h2>Réservation Confirmée !</h2>
+    
+    <div class="confirmation-details">
+        <h3>Détails de votre réservation</h3>
+        <table class="details-table">
+            <tr>
+                <td><strong>Salle:</strong></td>
+                <td>{{ reservation.salle.nom }}</td>
+            </tr>
+            <tr>
+                <td><strong>Date:</strong></td>
+                <td>{{ reservation.date|date:"l d F Y" }}</td>
+            </tr>
+            <tr>
+                <td><strong>Horaire:</strong></td>
+                <td>{{ reservation.heure_debut|time:"H:i" }} - {{ reservation.heure_fin|time:"H:i" }}</td>
+            </tr>
+            <tr>
+                <td><strong>Participants:</strong></td>
+                <td>{{ reservation.nombre_participants }} personnes</td>
+            </tr>
+            <tr>
+                <td><strong>Motif:</strong></td>
+                <td>{{ reservation.motif }}</td>
+            </tr>
+        </table>
+
+        <div class="info-box">
+            <p>📧 Un email de confirmation a été envoyé à <strong>{{ reservation.email }}</strong></p>
+            <p>💡 Conservez cet email pour pouvoir gérer votre réservation.</p>
+        </div>
+    </div>
+
+    <div class="confirmation-actions">
+        <a href="{% url 'salles:liste_salles' %}" class="btn btn-primary">
+            Réserver une autre salle
+        </a>
+        <a href="{% url 'salles:mes_reservations' %}?email={{ reservation.email }}" class="btn btn-info">
+            Voir mes réservations
+        </a>
+    </div>
+</div>
+{% endblock %}

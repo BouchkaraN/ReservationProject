@@ -1,0 +1,50 @@
+{% extends 'Salles/base.html' %}
+
+{% block title %}{{ salle.nom }}{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h2>{{ salle.nom }}</h2>
+    <a href="{% url 'salles:liste_salles' %}" class="btn btn-secondary">← Retour</a>
+</div>
+
+<div class="salle-detail">
+    <div class="detail-card">
+        <h3>Informations</h3>
+        <ul class="info-list">
+            <li><strong>Capacité:</strong> {{ salle.capacite }} personnes</li>
+            <li><strong>Étage:</strong> {{ salle.etage }}</li>
+            <li><strong>Équipements:</strong> {{ salle.equipements }}</li>
+        </ul>
+        <a href="{% url 'salles:reserver' salle.id %}" class="btn btn-success btn-large">
+            Réserver cette salle
+        </a>
+    </div>
+
+    <div class="detail-card">
+        <h3>Réservations à venir</h3>
+        {% if reservations %}
+            <table class="reservations-table">
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Horaire</th>
+                        <th>Réservé par</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for reservation in reservations %}
+                    <tr>
+                        <td>{{ reservation.date|date:"d/m/Y" }}</td>
+                        <td>{{ reservation.heure_debut|time:"H:i" }} - {{ reservation.heure_fin|time:"H:i" }}</td>
+                        <td>{{ reservation.nom_utilisateur }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% else %}
+            <p class="no-data">Aucune réservation à venir.</p>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

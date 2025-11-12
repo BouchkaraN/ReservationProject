@@ -1,0 +1,59 @@
+{% extends 'Salles/base.html' %}
+
+{% block title %}Mes Réservations{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h2>Mes Réservations</h2>
+</div>
+
+<div class="search-reservations">
+    <form method="get" class="search-form">
+        <input type="email" name="email" placeholder="Entrez votre email..." 
+               value="{{ email }}" required class="search-input">
+        <button type="submit" class="btn btn-primary">Rechercher</button>
+    </form>
+</div>
+
+{% if email %}
+    {% if reservations %}
+        <div class="reservations-list">
+            {% for reservation in reservations %}
+            <div class="reservation-card {% if not reservation.validee %}cancelled{% endif %}">
+                <div class="reservation-header">
+                    <h3>{{ reservation.salle.nom }}</h3>
+                    {% if reservation.validee %}
+                        <span class="badge badge-success">Confirmée</span>
+                    {% else %}
+                        <span class="badge badge-danger">Annulée</span>
+                    {% endif %}
+                </div>
+                <div class="reservation-body">
+                    <p><strong> Date:</strong> {{ reservation.date|date:"d/m/Y" }}</p>
+                    <p><strong> Horaire:</strong> {{ reservation.heure_debut|time:"H:i" }} - {{ reservation.heure_fin|time:"H:i" }}</p>
+                    <p><strong> Participants:</strong> {{ reservation.nombre_participants }}</p>
+                    <p><strong> Motif:</strong> {{ reservation.motif }}</p>
+                </div>
+                {% if reservation.validee %}
+                <div class="reservation-footer">
+                    <form method="post" action="{% url 'salles:annuler_reservation' reservation.id %}" 
+                          onsubmit="return confirm('Êtes-vous sûr de vouloir annuler cette réservation ?');">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-danger">Annuler</button>
+                    </form>
+                </div>
+                {% endif %}
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="no-results">
+            <p>Aucune réservation trouvée pour cet email.</p>
+        </div>
+        {% endif %}
+    {% else %}
+    <div class="info-message">
+        <p>Entrez votre email pour voir vos réservations.</p>
+    </div>
+    {% endif %}
+{% endblock %}

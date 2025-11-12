@@ -1,0 +1,47 @@
+{% extends 'Salles/base.html' %}
+
+{% block title %}Liste des Salles{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h2>Salles Disponibles</h2>
+</div>
+
+<div class="filters">
+    <form method="get" class="filter-form">
+        <input type="text" name="search" placeholder="Rechercher une salle..." 
+               value="{{ search }}" class="search-input">
+        <input type="number" name="capacite" placeholder="Capacité min." 
+               value="{{ capacite_min }}" class="search-input" min="1">
+        <button type="submit" class="btn btn-primary">Rechercher</button>
+        <a href="{% url 'salles:liste_salles' %}" class="btn btn-secondary">Réinitialiser</a>
+    </form>
+</div>
+
+<div class="salles-grid">
+    {% if salles %}
+        {% for salle in salles %}
+        <div class="salle-card">
+            <div class="salle-header">
+                <h3>{{ salle.nom }}</h3>
+                <span class="badge">Étage {{ salle.etage }}</span>
+            </div>
+            <div class="salle-body">
+                <p><strong>Capacité:</strong> {{ salle.capacite }} personnes</p>
+                <p><strong>Équipements:</strong> {{ salle.equipements }}</p>
+            </div>
+            <div class="salle-footer">
+                <a href="{% url 'salles:detail_salle' salle.id %}" class="btn btn-info">
+                    Voir Détails
+                </a>
+                <a href="{% url 'salles:reserver' salle.id %}" class="btn btn-success">
+                    Réserver
+                </a>
+            </div>
+        </div>
+        {% endfor %}
+    {% else %}
+        <p class="no-results">Aucune salle trouvée.</p>
+    {% endif %}
+</div>
+{% endblock %}

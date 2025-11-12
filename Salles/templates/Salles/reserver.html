@@ -1,0 +1,92 @@
+{% extends 'Salles/base.html' %}
+
+{% block title %}Réserver {{ salle.nom }}{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h2>Réserver {{ salle.nom }}</h2>
+    <a href="{% url 'salles:detail_salle' salle.id %}" class="btn btn-secondary">← Retour</a>
+</div>
+
+<div class="form-container">
+    <div class="salle-info-box">
+        <h3>Informations sur la salle</h3>
+        <p><strong>Capacité:</strong> {{ salle.capacite }} personnes</p>
+        <p><strong>Étage:</strong> {{ salle.etage }}</p>
+        <p><strong>Équipements:</strong> {{ salle.equipements }}</p>
+    </div>
+
+    <form method="post" class="reservation-form">
+        {% csrf_token %}
+        
+        <div class="form-group">
+            <label for="{{ form.nom_utilisateur.id_for_label }}">Nom complet *</label>
+            {{ form.nom_utilisateur }}
+            {% if form.nom_utilisateur.errors %}
+                <span class="error">{{ form.nom_utilisateur.errors }}</span>
+            {% endif %}
+        </div>
+
+        <div class="form-group">
+            <label for="{{ form.email.id_for_label }}">Email *</label>
+            {{ form.email }}
+            {% if form.email.errors %}
+                <span class="error">{{ form.email.errors }}</span>
+            {% endif %}
+        </div>
+
+        <div class="form-group">
+            <label for="{{ form.date.id_for_label }}">Date *</label>
+            {{ form.date }}
+            {% if form.date.errors %}
+                <span class="error">{{ form.date.errors }}</span>
+            {% endif %}
+        </div>
+
+        <div class="form-row">
+            <div class="form-group">
+                <label for="{{ form.heure_debut.id_for_label }}">Heure de début *</label>
+                {{ form.heure_debut }}
+                {% if form.heure_debut.errors %}
+                    <span class="error">{{ form.heure_debut.errors }}</span>
+                {% endif %}
+            </div>
+
+            <div class="form-group">
+                <label for="{{ form.heure_fin.id_for_label }}">Heure de fin *</label>
+                {{ form.heure_fin }}
+                {% if form.heure_fin.errors %}
+                    <span class="error">{{ form.heure_fin.errors }}</span>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label for="{{ form.nombre_participants.id_for_label }}">Nombre de participants *</label>
+            {{ form.nombre_participants }}
+            {% if form.nombre_participants.errors %}
+                <span class="error">{{ form.nombre_participants.errors }}</span>
+            {% endif %}
+        </div>
+
+        <div class="form-group">
+            <label for="{{ form.motif.id_for_label }}">Motif de la réservation *</label>
+            {{ form.motif }}
+            {% if form.motif.errors %}
+                <span class="error">{{ form.motif.errors }}</span>
+            {% endif %}
+        </div>
+
+        {% if form.non_field_errors %}
+            <div class="error-box">
+                {{ form.non_field_errors }}
+            </div>
+        {% endif %}
+
+        <div class="form-actions">
+            <button type="submit" class="btn btn-success btn-large">Confirmer la réservation</button>
+            <a href="{% url 'salles:detail_salle' salle.id %}" class="btn btn-secondary">Annuler</a>
+        </div>
+    </form>
+</div>
+{% endblock %}
