@@ -7,7 +7,7 @@ from .forms import ReservationForm
 
 
 def liste_salles(request):
-    """Page 1: Liste de toutes les salles"""
+    # Liste de toutes les salles
     salles = Salle.objects.all().order_by('etage', 'nom')
 
     # Filtre de recherche
@@ -32,7 +32,7 @@ def liste_salles(request):
 
 
 def detail_salle(request, salle_id):
-    """Page 2: Détail d'une salle avec ses réservations"""
+    # Détail d'une salle avec ses réservations
     salle = get_object_or_404(Salle, pk=salle_id)
 
     # Réservations futures pour cette salle
@@ -49,32 +49,20 @@ def detail_salle(request, salle_id):
     return render(request, 'Salles/detail_salle.html', context)
 
 
-# Salles/views.py (within the 'reserver' function)
-
 def reserver(request, salle_id):
-    """Page 3: Réserver une salle"""
+    # Réserver une salle
     salle = get_object_or_404(Salle, pk=salle_id)
     if request.method == 'POST':
-        # 1. Initialize the form with POST data and the Salle object
         form = ReservationForm(request.POST)
         reservation_instance = form.instance
         reservation_instance.salle = salle
 
-        # 2. **CRITICAL FIX**: Manually assign the salle object to the form's instance
-        #    before validation runs (which calls Reservation.clean())
         if form.is_valid():
-            # The 'salle' field is an instance attribute on the Reservation object
-            # that is about to be saved. We set it here.
+
             reservation = form.save(commit=False)
-
-            # The original logic checks availability *after* is_valid() which is correct
-            # for separation of concerns, but now the Model's clean() will also run the check.
-
-            # Check availability *again* (although clean() should handle it)
             if salle.est_disponible(reservation.date, reservation.heure_debut, reservation.heure_fin):
                 reservation.save()
 
-                # ... (rest of the successful logic)
                 reservation.refresh_from_db()
                 print(f"DEBUG - Reservation ID: {reservation.id}")
                 print(f"DEBUG - Salle ID: {reservation.salle_id}")
@@ -89,7 +77,6 @@ def reserver(request, salle_id):
                 )
                 return redirect('salles:confirmation', reservation_id=reservation.id)
             else:
-                # If availability check fails (which should be caught by clean() too)
                 messages.error(
                     request,
                     'Cette salle est déjà réservée pour ce créneau horaire.'
@@ -106,10 +93,10 @@ def reserver(request, salle_id):
     return render(request, 'Salles/reserver.html', context)
 
 def confirmation(request, reservation_id):
-    """Page 4: Confirmation de réservation"""
+    # Confirmation de réservation
     reservation = get_object_or_404(Reservation, pk=reservation_id)
 
-    # DÉBOGAGE: Vérifier l'accès à la salle
+    # DÉBOGAGE
     print(f"DEBUG Confirmation - Reservation ID: {reservation.id}")
     print(f"DEBUG Confirmation - Salle ID: {reservation.salle_id}")
     try:
@@ -125,7 +112,7 @@ def confirmation(request, reservation_id):
 
 
 def mes_reservations(request):
-    """Page 5: Recherche de réservations par email"""
+    # Recherche de réservations par email
     reservations = []
     email = request.GET.get('email', '')
 
@@ -143,7 +130,7 @@ def mes_reservations(request):
 
 
 def annuler_reservation(request, reservation_id):
-    """Annuler une réservation"""
+    # Annuler
     reservation = get_object_or_404(Reservation, pk=reservation_id)
 
     if request.method == 'POST':
